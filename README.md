@@ -29,11 +29,15 @@ subgraphs) is left as its source. glow was asked to do this in
 
 ## Install
 
-Once published, through mise's go backend:
+Through mise's go backend, in a project or in `~/.config/mise/config.toml`:
 
 ```toml
 [tools]
 "go:github.com/qstearns/render-doc" = "latest"
 ```
 
-From a checkout, `mise run install` builds it into `~/.local/bin`.
+Or `go install github.com/qstearns/render-doc@latest`.
+
+For local development, `mise run install` builds the working tree into
+`~/.local/bin`; that copy shadows a mise-managed one if `~/.local/bin` comes
+first on your PATH, so delete it when you're done.

@@ -10,6 +10,6 @@ description = "Run the unit tests"
 run = "go test ./..."
 
 [tasks.install]
-description = "Install render-doc into ~/.local/bin"
+description = "Install a dev build into ~/.local/bin (shadows a mise-managed copy; delete when done)"
 env = { GOBIN = "{{env.HOME}}/.local/bin" }
 run = "go install ."

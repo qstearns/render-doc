@@ -24,8 +24,13 @@ subgraphs) is left as its source. glow was asked to do this in
 | `-w`, `--width` | terminal width | word-wrap column; the full width so wide diagrams aren't folded |
 | `-s`, `--style` | `auto` | glamour style: `auto`, `dark`, `light`, `notty`, `dracula`, `tokyo-night`, `pink`, `ascii`, or a JSON file. `auto` asks the terminal for its background and uses `notty` when stdout isn't a terminal |
 | `--ascii` | off | draw diagrams with plain ASCII instead of box-drawing characters |
-| `--no-pager` | off | write to stdout instead of `$PAGER` (`less`, with `LESS=FRX` when unset), which is used whenever stdout is a terminal |
+| `--no-pager` | off | write to stdout instead of the interactive viewer, which is used whenever stdout is a terminal |
 | `--raw` | off | leave mermaid fences as source |
+
+The interactive viewer rerenders the document when the terminal is resized.
+Use arrow keys or `j`/`k` to scroll, space/`f` and `b` to move by a page,
+`g`/`G` to jump to the top/bottom, and `q` to quit. An explicit `--width`
+keeps the document layout fixed while the viewport itself still resizes.
 
 ## Install
 

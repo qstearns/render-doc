@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"strings"
 
 	"charm.land/glamour/v2"
@@ -50,7 +49,7 @@ func run(args []string) error {
 	fs.StringVar(&style, "s", "auto", "glamour `style`: auto, dark, light, notty, dracula, tokyo-night, pink, ascii, or a JSON file")
 	fs.StringVar(&style, "style", "auto", "alias for -s")
 	fs.BoolVar(&ascii, "ascii", false, "draw diagrams with plain ASCII instead of box-drawing characters")
-	fs.BoolVar(&noPager, "no-pager", false, "write to stdout instead of $PAGER (default: page when stdout is a terminal)")
+	fs.BoolVar(&noPager, "no-pager", false, "write to stdout instead of opening the interactive viewer")
 	fs.BoolVar(&raw, "raw", false, "leave mermaid fences as source")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: render-doc [flags] <file.md | ->")
@@ -80,12 +79,14 @@ func run(args []string) error {
 	}
 
 	isTTY := term.IsTerminal(int(os.Stdout.Fd()))
-	out, err := renderMarkdown(md, resolveStyle(style, isTTY), resolveWidth(width, isTTY))
+	resolvedStyle := resolveStyle(style, isTTY)
+	if isTTY && !noPager {
+		return viewMarkdown(md, resolvedStyle, width)
+	}
+
+	out, err := renderMarkdown(md, resolvedStyle, resolveWidth(width, isTTY))
 	if err != nil {
 		return err
-	}
-	if isTTY && !noPager {
-		return page(out)
 	}
 	_, err = io.WriteString(os.Stdout, out)
 	return err
@@ -158,24 +159,6 @@ func renderMarkdown(md string, style glamour.TermRendererOption, width int) (str
 		return "", err
 	}
 	return r.Render(md)
-}
-
-// page streams out through the user's pager the way git does: $PAGER, else
-// less, with LESS defaulting to FRX so short docs print and quit, colors pass
-// through, and the screen isn't cleared on exit.
-func page(out string) error {
-	pager := os.Getenv("PAGER")
-	if pager == "" {
-		pager = "less"
-	}
-	cmd := exec.Command("sh", "-c", pager)
-	cmd.Stdin = strings.NewReader(out)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if os.Getenv("LESS") == "" {
-		cmd.Env = append(os.Environ(), "LESS=FRX")
-	}
-	return cmd.Run()
 }
 
 // fence is one line that opens or closes a fenced code block.

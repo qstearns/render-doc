@@ -32,6 +32,13 @@ Use arrow keys or `j`/`k` to scroll, space/`f` and `b` to move by a page,
 `g`/`G` to jump to the top/bottom, and `q` to quit. An explicit `--width`
 keeps the document layout fixed while the viewport itself still resizes.
 
+Drag with the mouse to select text; double-click takes a word and
+triple-click a line. Releasing the button copies the selection, `y` copies it
+again, and `esc` clears it. Copying goes through OSC 52, so it works over ssh
+but not in terminals that don't implement the escape (Terminal.app is the
+common one) — there, hold <kbd>option</kbd> to use Terminal's own selection
+instead, which bypasses the viewer entirely.
+
 ## Install
 
 Through mise's go backend, in a project or in `~/.config/mise/config.toml`:
